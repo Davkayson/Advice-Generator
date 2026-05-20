@@ -4,18 +4,28 @@ const diceId = document.getElementById('dice-id');
 const url = "https://api.adviceslip.com/advice";
 
 async function getAdvice() {
-  const response = await fetch(url);
-  const { slip: { id, advice } } = await response.json();
-  // const body = await response.json();
-  // const slip = body.slip;
-  // const advice = body.slip.advice;
-  // const id = body.slip.id;
-  // console.log(body);
-  // console.log(slip);
-  // console.log(advice);
-  // console.log(id);
-  adviceId.innerText = id;
-  adviceText.innerText = advice;
+  let pending = true;
+  adviceId.parentElement.style.display = 'none'
+  adviceText.innerText = 'Loading...';
+
+  try {
+    const res = await fetch(url)
+    if (res.ok) {
+      pending = false;
+      const { slip: { id, advice } } = await res.json();
+      adviceId.parentElement.style.display = 'block';
+      adviceId.innerText = id;
+      adviceText.innerText = advice;
+    } else {
+      pending = false;
+      adviceId.innerText = '';
+      adviceText.innerText = 'Sorry, something went wrong. Please try again.'
+    }
+  } catch (error) {
+    adviceId.innerText = '';
+    adviceId.parentElement.style.display = 'none';
+    adviceText.innerText = 'Sorry, something went wrong. Please try again.'
+  }
 }
-getAdvice()
+getAdvice();
 diceId.addEventListener('click', getAdvice);
