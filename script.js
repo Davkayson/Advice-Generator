@@ -2,29 +2,29 @@ const adviceId = document.getElementById('advice-id');
 const adviceText = document.getElementById('advice-text');
 const diceId = document.getElementById('dice-id');
 const url = "https://api.adviceslip.com/advice";
+const section = document.querySelector('section')
 
 async function getAdvice() {
-  let pending = true;
-  adviceId.parentElement.style.display = 'none'
-  adviceText.innerText = 'Loading...';
-
+  let isLoading = true;
+  adviceText.innerText = 'Loading';
+  adviceId.parentElement.style.display = 'none';
   try {
     const res = await fetch(url)
-    if (res.ok) {
-      pending = false;
+
+    if (res.status === 200) {
+      isLoading = false
       const { slip: { id, advice } } = await res.json();
       adviceId.parentElement.style.display = 'block';
       adviceId.innerText = id;
       adviceText.innerText = advice;
     } else {
-      pending = false;
-      adviceId.innerText = '';
-      adviceText.innerText = 'Sorry, something went wrong. Please try again.'
+      adviceText.innerText = "sorry!, something went wrong"
+      adviceId.parentElement.style.display = 'none';
     }
   } catch (error) {
-    adviceId.innerText = '';
+    isLoading = false;
+    adviceText.innerText = "sorry!, something went wrong"
     adviceId.parentElement.style.display = 'none';
-    adviceText.innerText = 'Sorry, something went wrong. Please try again.'
   }
 }
 getAdvice();
